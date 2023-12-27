@@ -28,17 +28,19 @@ STATIC int WINAPI MultiByteToWideChar(UINT CodePage,
     size_t i;
 
     DebugLog("%u, %#x, %p, %u, %p, %u", CodePage,
-                                        dwFlags,
-                                        lpMultiByteStr,
-                                        cbMultiByte,
-                                        lpWideCharStr,
-                                        cchWideChar);
+             dwFlags,
+             lpMultiByteStr,
+             cbMultiByte,
+             lpWideCharStr,
+             cchWideChar);
 
-    if ((dwFlags & ~(MB_ERR_INVALID_CHARS | MB_PRECOMPOSED)) != 0) {
+    if ((dwFlags & ~(MB_ERR_INVALID_CHARS | MB_PRECOMPOSED)) != 0)
+    {
         LogMessage("Unsupported Conversion Flags %#x", dwFlags);
     }
 
-    if (CodePage != 0 && CodePage != 65001) {
+    if (CodePage != 0 && CodePage != 65001)
+    {
         DebugLog("Unsupported CodePage %u", CodePage);
     }
 
@@ -53,14 +55,18 @@ STATIC int WINAPI MultiByteToWideChar(UINT CodePage,
 
     // cbMultibyte is the number of *bytes* to process.
     // cchWideChar is the number of output *chars* expected.
-    if (cbMultiByte > cchWideChar) {
+    if (cbMultiByte > cchWideChar)
+    {
         return 0;
     }
 
-    for (i = 0; i < cbMultiByte; i++) {
-        lpWideCharStr[i] = (uint8_t) lpMultiByteStr[i];
-        if (dwFlags & MB_ERR_INVALID_CHARS) {
-            if (!isascii(lpMultiByteStr[i]) || iscntrl(lpMultiByteStr[i])) {
+    for (i = 0; i < cbMultiByte; i++)
+    {
+        lpWideCharStr[i] = (uint8_t)lpMultiByteStr[i];
+        if (dwFlags & MB_ERR_INVALID_CHARS)
+        {
+            if (!isascii(lpMultiByteStr[i]) || iscntrl(lpMultiByteStr[i]))
+            {
                 lpWideCharStr[i] = '?';
             }
         }
@@ -69,34 +75,43 @@ STATIC int WINAPI MultiByteToWideChar(UINT CodePage,
     return i;
 }
 
-STATIC int WINAPI WideCharToMultiByte(UINT CodePage, DWORD dwFlags, PVOID lpWideCharStr, int cchWideChar, PVOID lpMultiByteStr, int cbMultiByte, PVOID lpDefaultChar, PVOID lpUsedDefaultChar)
+STATIC int WINAPI
+WideCharToMultiByte(UINT CodePage, DWORD dwFlags, PVOID lpWideCharStr, int cchWideChar, PVOID lpMultiByteStr,
+                    int cbMultiByte, PVOID lpDefaultChar, PVOID lpUsedDefaultChar)
 {
     char *ansi = NULL;
 
     DebugLog("%u, %#x, %p, %d, %p, %d, %p, %p", CodePage, dwFlags, lpWideCharStr, cchWideChar, lpMultiByteStr, cbMultiByte, lpDefaultChar, lpUsedDefaultChar);
 
-    if (cchWideChar != -1) {
+    if (cchWideChar != -1)
+    {
         // Add a nul terminator.
         PVOID tmpStr = calloc(cchWideChar + 1, sizeof(USHORT));
         memcpy(tmpStr, lpWideCharStr, cchWideChar);
         ansi = CreateAnsiFromWide(tmpStr);
         free(tmpStr);
-    } else {
+    }
+    else
+    {
         ansi = CreateAnsiFromWide(lpWideCharStr);
     }
 
     // This really can happen
-    if (ansi == NULL) {
+    if (ansi == NULL)
+    {
         return 0;
     }
 
     DebugLog("cchWideChar == %d, Ansi: [%s]", cchWideChar, ansi);
 
-    if (lpMultiByteStr && strlen(ansi) < cbMultiByte) {
+    if (lpMultiByteStr && strlen(ansi) < cbMultiByte)
+    {
         strcpy(lpMultiByteStr, ansi);
         free(ansi);
         return strlen(lpMultiByteStr) + 1;
-    } else if (!lpMultiByteStr && cbMultiByte == 0) {
+    }
+    else if (!lpMultiByteStr && cbMultiByte == 0)
+    {
         int len = strlen(ansi) + 1;
         free(ansi);
         return len;
@@ -114,7 +129,6 @@ STATIC BOOL WINAPI GetStringTypeA(DWORD locale, DWORD dwInfoType, PUSHORT lpSrcS
 
     return FALSE;
 }
-
 
 STATIC BOOL WINAPI GetStringTypeW(DWORD dwInfoType, PUSHORT lpSrcStr, int cchSrc, PUSHORT lpCharType)
 {
@@ -138,7 +152,8 @@ STATIC PVOID WINAPI UuidFromStringW(PUSHORT StringUuid, PBYTE Uuid)
 
     DebugLog("%S, %p", StringUuid, Uuid);
 
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < 16; i++)
+    {
         Uuid[i] = 0x41;
     }
 
@@ -151,15 +166,16 @@ STATIC INT WINAPI UuidCreate(PBYTE Uuid)
 
     DebugLog("%p", Uuid);
 
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < 16; i++)
+    {
         Uuid[i] = 0x41;
     }
 
     return 0;
 }
 
-#define CSTR_LESS_THAN    1
-#define CSTR_EQUAL        2
+#define CSTR_LESS_THAN 1
+#define CSTR_EQUAL 2
 #define CSTR_GREATER_THAN 3
 
 STATIC INT WINAPI CompareStringOrdinal(PVOID lpString1,
@@ -174,10 +190,10 @@ STATIC INT WINAPI CompareStringOrdinal(PVOID lpString1,
     PVOID lpt2;
 
     DebugLog("%p, %d, %p, %d, %d", lpString1,
-                                   cchCount1,
-                                   lpString2,
-                                   cchCount2,
-                                   bIgnoreCase);
+             cchCount1,
+             lpString2,
+             cchCount2,
+             bIgnoreCase);
 
     if (cchCount1 == -1)
         cchCount1 = CountWideChars(lpString1);
@@ -188,7 +204,8 @@ STATIC INT WINAPI CompareStringOrdinal(PVOID lpString1,
     lpt1 = calloc(cchCount1 + 1, 2);
     lpt2 = calloc(cchCount2 + 1, 2);
 
-    if (!lpt1 || !lpt2) {
+    if (!lpt1 || !lpt2)
+    {
         // "The function returns 0 if it does not succeed."
         free(lpt1);
         free(lpt2);
@@ -199,8 +216,8 @@ STATIC INT WINAPI CompareStringOrdinal(PVOID lpString1,
     memcpy(lpt2, lpString2, cchCount2 * 2);
 
     Result = bIgnoreCase
-        ? wcsicmp(lpt1, lpt2)
-        : wcscmp(lpt1, lpt2);
+                 ? wcsicmp(lpt1, lpt2)
+                 : wcscmp(lpt1, lpt2);
 
     free(lpt1);
     free(lpt2);
@@ -217,11 +234,18 @@ STATIC INT WINAPI CompareStringOrdinal(PVOID lpString1,
 }
 
 DECLARE_CRT_EXPORT("MultiByteToWideChar", MultiByteToWideChar);
+
 DECLARE_CRT_EXPORT("WideCharToMultiByte", WideCharToMultiByte);
+
 DECLARE_CRT_EXPORT("GetStringTypeA", GetStringTypeA);
+
 DECLARE_CRT_EXPORT("GetStringTypeW", GetStringTypeW);
+
 DECLARE_CRT_EXPORT("RtlInitUnicodeString", RtlInitUnicodeString);
+
 DECLARE_CRT_EXPORT("UuidFromStringW", UuidFromStringW);
+
 DECLARE_CRT_EXPORT("UuidCreate", UuidCreate);
 DECLARE_CRT_EXPORT("CompareStringOrdinal", CompareStringOrdinal);
 
+DECLARE_CRT_EXPORT("CompareStringOrdinal", CompareStringOrdinal);
