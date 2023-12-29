@@ -31,3 +31,5 @@ target_sources(peloader
     ${Main}
     ${Winapi}
 )
+
+install(TARGETS peloader DESTINATION .)

@@ -29,3 +29,4 @@ target_sources(intercept
 )
 
 target_link_libraries(intercept disasm)
+install (TARGETS intercept DESTINATION .)
