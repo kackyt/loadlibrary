@@ -10,6 +10,7 @@ fn main() {
         .build();
 
     println!("cargo:rustc-link-search=native={}", dst.display());
+    println!("cargo:rustc-link-lib=static=peloader");
 
     // let bindings = bindgen::Builder::default()
     //     .header("peloader/pe_linker.h")
