@@ -3,16 +3,22 @@
 #![allow(non_snake_case)]
 #![allow(improper_ctypes)]
 
-use std::os::raw::c_void;
+use std::{
+    ffi::CString,
+    os::{raw::c_void, unix::ffi::OsStrExt},
+    path::Path,
+};
 include!("../bindgen/bindings.rs");
 
-pub fn win_dlopen(path: &str) -> usize {
+pub fn win_dlopen<P: AsRef<Path>>(path: P) -> anyhow::Result<usize> {
+    let refp = path.as_ref();
+    let c_str = CString::new(refp.as_os_str().as_bytes())?;
     let mut size: usize = 0;
     let mut image: pe_image = Default::default();
 
     unsafe {
         pe_load_library(
-            path.as_bytes().as_ptr() as *const i8,
+            c_str.as_ptr() as *const i8,
             &mut image.image,
             &mut size as *mut usize,
         );
@@ -26,7 +32,7 @@ pub fn win_dlopen(path: &str) -> usize {
         }
     }
 
-    size
+    Ok(size)
 }
 
 pub unsafe fn win_dlsym(sym: &str) -> *const c_void {
@@ -42,11 +48,14 @@ pub unsafe fn win_dlsym(sym: &str) -> *const c_void {
 
 #[cfg(test)]
 mod tests {
+    use std::path::PathBuf;
+
     use super::*;
 
     #[test]
     fn it_works() {
-        assert_ne!(win_dlopen("Test.dll"), 0);
+        let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("Test.dll");
+        assert!(win_dlopen(&path).is_ok());
         unsafe {
             assert_ne!(win_dlsym("MJPInterfaceFunc"), std::ptr::null());
         }
