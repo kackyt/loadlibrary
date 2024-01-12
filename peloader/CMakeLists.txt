@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.18)
 project(peloader VERSION 1.0 LANGUAGES C)
 
 add_library(peloader STATIC)

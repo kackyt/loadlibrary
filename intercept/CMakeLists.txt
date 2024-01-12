@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.18)
 project(intercept VERSION 1.0 LANGUAGES C)
 
 add_subdirectory(libdisasm)
