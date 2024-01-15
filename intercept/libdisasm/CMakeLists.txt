@@ -27,3 +27,5 @@ target_sources(disasm
     PRIVATE
     ${Main}
 )
+
+install (TARGETS disasm DESTINATION .)

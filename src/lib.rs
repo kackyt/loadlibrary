@@ -54,7 +54,7 @@ mod tests {
 
     #[test]
     fn it_works() {
-        let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("Test.dll");
+        let path = PathBuf::from("/opt/apps/loadlibrary/Test.dll");//PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("Test.dll");
         assert!(win_dlopen(&path).is_ok());
         unsafe {
             assert_ne!(win_dlsym("MJPInterfaceFunc"), std::ptr::null());
