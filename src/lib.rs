@@ -11,9 +11,10 @@ use std::{
 extern crate libc;
 include!("../bindgen/bindings.rs");
 
-pub fn win_dlopen<P: AsRef<Path>>(image: &mut pe_image, path: P) -> anyhow::Result<i32> {
+pub fn win_dlopen<P: AsRef<Path>>(path: P) -> anyhow::Result<pe_image> {
     let refp = path.as_ref();
     let c_str = refp.as_os_str().as_bytes();
+    let mut image: pe_image = Default::default();
     let mut size: usize = 0;
     let mut handle = String::from("dummymodule");
 
@@ -31,14 +32,14 @@ pub fn win_dlopen<P: AsRef<Path>>(image: &mut pe_image, path: P) -> anyhow::Resu
 
         image.size = size as i32;
 
-        link_pe_images(image as *mut pe_image, 1);
+        link_pe_images(&mut image as *mut pe_image, 1);
 
         if let Some(entry) = image.entry {
             entry(handle.as_mut_ptr() as *mut c_void, DLL_PROCESS_ATTACH, std::ptr::null_mut());
         }
     }
 
-    Ok(image.size)
+    Ok(image)
 }
 
 pub unsafe fn win_dlsym(sym: &str) -> anyhow::Result<*const c_void> {
@@ -61,9 +62,8 @@ mod tests {
 
     #[test]
     fn it_works() {
-        let mut image: pe_image = Default::default();
         let path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("Test.dll");
-        assert!(win_dlopen(&mut image, &path).is_ok());
+        assert!(win_dlopen(&path).is_ok());
         unsafe {
             assert_ne!(win_dlsym("MJPInterfaceFunc"), std::ptr::null());
         }
