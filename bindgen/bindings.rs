@@ -23321,7 +23321,7 @@ impl Default for wrap_export {
 pub struct pe_image {
     pub name: [::std::os::raw::c_char; 128usize],
     pub entry: ::std::option::Option<
-        unsafe extern "C" fn(hinstDLL: PVOID, fdwReason: DWORD, lpvReserved: PVOID) -> BOOL,
+        unsafe extern "stdcall" fn(hinstDLL: PVOID, fdwReason: DWORD, lpvReserved: PVOID) -> BOOL,
     >,
     pub image: *mut ::std::os::raw::c_void,
     pub size: ::std::os::raw::c_int,

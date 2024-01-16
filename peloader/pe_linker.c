@@ -55,11 +55,13 @@ PKUSER_SHARED_DATA SharedUserData;
 #define DRIVER_NAME "pelinker"
 #define RVA2VA(image, rva, type) (type)(ULONG_PTR)((void *)image + rva)
 
-//#define DBGLINKER(fmt, ...) printf("%s (%s:%d): " fmt "\n",     \
-//                                   DRIVER_NAME, __func__,               \
-//                                   __LINE__ , ## __VA_ARGS__);
-
+#ifndef NDEBUG
+#define DBGLINKER(fmt, ...) printf("%s (%s:%d): " fmt "\n",     \
+                                   DRIVER_NAME, __func__,               \
+                                   __LINE__ , ## __VA_ARGS__);
+#else
 #define DBGLINKER(fmt, ...)
+#endif
 
 #ifndef NDEBUG
 #define ERROR(fmt, ...) printf("%s (%s:%d): " fmt "\n", \
@@ -241,7 +243,7 @@ static int check_nt_hdr(IMAGE_NT_HEADERS *nt_hdr)
                 return -EINVAL;
         }
 
-#if 0
+#ifndef NDEBUG
         DBGLINKER("number of datadictionary entries %d",
                   opt_hdr->NumberOfRvaAndSizes);
         for (i = 0; i < opt_hdr->NumberOfRvaAndSizes; i++) {
@@ -304,8 +306,8 @@ static int import(void *image, IMAGE_IMPORT_DESCRIPTOR *dirent, char *dll)
                 }
                 else
                 {
-                        // DBGLINKER("found symbol: %s:%s: addr: %p, rva = %llu",
-                        //           dll, symname, adr, (uint64_t)address_tbl[i]);
+                        DBGLINKER("found symbol: %s:%s: addr: %p, rva = %llu",
+                                   dll, symname, adr, (uint64_t)address_tbl[i]);
                         address_tbl[i] = (ULONG_PTR)adr;
                 }
         }
@@ -352,7 +354,7 @@ static int read_exports(struct pe_image *pe)
                     address >= (export_data_dir->VirtualAddress +
                                 export_data_dir->Size))
                 {
-                        // DBGLINKER("forwarder rva");
+                        DBGLINKER("forwarder rva");
                 }
 
                 TRACE1("export symbol: %s, at %p",
