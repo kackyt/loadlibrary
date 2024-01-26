@@ -493,7 +493,7 @@ static int fix_pe_image(struct pe_image *pe)
         if (pe->size == pe->opt_hdr->SizeOfImage)
         {
                 /* Nothing to do */
-                return 0;
+                // return 0;
         }
 
         image_size = pe->opt_hdr->SizeOfImage;

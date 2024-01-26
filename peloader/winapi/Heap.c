@@ -31,22 +31,26 @@ STATIC PVOID WINAPI HeapAlloc(HANDLE hHeap, DWORD dwFlags, SIZE_T dwBytes)
 {
     PVOID Buffer;
 
-    // DebugLog("%p, %#x, %u", hHeap, dwFlags, dwBytes);
-
     if (dwFlags & HEAP_ZERO_MEMORY) {
         Buffer = calloc(dwBytes, 1);
     } else {
         Buffer = malloc(dwBytes);
     }
 
+    DebugLog("%p, %#x, %u, %p", hHeap, dwFlags, dwBytes, Buffer);
+
     return Buffer;
 }
 
 STATIC BOOL WINAPI HeapFree(HANDLE hHeap, DWORD dwFlags, PVOID lpMem)
 {
-    // DebugLog("%p, %#x, %p", hHeap, dwFlags, lpMem);
+    DebugLog("%p, %#x, %p", hHeap, dwFlags, lpMem);
 
-    free(lpMem);
+    if ((DWORD)lpMem & 0x80000000) {
+        DebugLog("FIXME: Invalid pointer passed to HeapFree()");
+    } else {
+        free(lpMem);
+    }
 
     return TRUE;
 }
