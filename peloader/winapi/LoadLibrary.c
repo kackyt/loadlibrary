@@ -93,11 +93,17 @@ static DWORD WINAPI GetModuleFileNameW(HANDLE hModule, PWCHAR lpFilename, DWORD 
     return strlen("C:\\dummy\\fakename.exe");
 }
 
+extern HANDLE current_module; 
+
 static HANDLE WINAPI GetModuleHandleA(PCHAR lpModuleName)
 {
     DebugLog("%p [%s]", lpModuleName, lpModuleName);
 
-    return (HANDLE) NULL;
+    if (lpModuleName) {
+        return (HANDLE) NULL;
+    } else {
+        return current_module;
+    }
 }
 
 static VOID WINAPI FreeLibrary(PVOID hLibModule)

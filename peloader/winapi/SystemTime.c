@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <assert.h>
+#include <sys/time.h>
 
 #include "winnt_types.h"
 #include "log.h"
@@ -23,10 +24,53 @@ typedef struct _SYSTEMTIME {
   WORD wMilliseconds;
 } SYSTEMTIME, *PSYSTEMTIME;
 
+typedef struct _TIME_ZONE_INFORMATION {
+  LONG       Bias;
+  WCHAR      StandardName[32];
+  SYSTEMTIME StandardDate;
+  LONG       StandardBias;
+  WCHAR      DaylightName[32];
+  SYSTEMTIME DaylightDate;
+  LONG       DaylightBias;
+} TIME_ZONE_INFORMATION, *PTIME_ZONE_INFORMATION, *LPTIME_ZONE_INFORMATION;
+
 extern void WINAPI SetLastError(DWORD dwErrCode);
 
 // These routines are called to check if signing certificates have expired, so
 // should return similar values.
+
+STATIC VOID WINAPI GetLocalTime(PSYSTEMTIME lpLocalTime)
+{
+    struct tm local_tim;
+    time_t tim;
+
+    time(&tim);
+    localtime_r(&tim, &local_tim);
+
+    lpLocalTime->wYear = local_tim.tm_year + 1900;
+    lpLocalTime->wMonth = local_tim.tm_mon + 1;
+    lpLocalTime->wDayOfWeek = local_tim.tm_wday;
+    lpLocalTime->wDay = local_tim.tm_mday;
+    lpLocalTime->wHour = local_tim.tm_hour;
+    lpLocalTime->wMinute = local_tim.tm_min;
+    lpLocalTime->wSecond = local_tim.tm_sec;
+    lpLocalTime->wMilliseconds = 0;
+}
+
+STATIC VOID WINAPI GetTimeZoneInformation(LPTIME_ZONE_INFORMATION lpTimeZoneInformation)
+{
+    memset(lpTimeZoneInformation, 0, sizeof(TIME_ZONE_INFORMATION));
+    struct timeval tv;
+    struct timezone tz;
+
+    gettimeofday(&tv, &tz);
+
+    lpTimeZoneInformation->Bias = tz.tz_minuteswest;
+
+    strncpy(lpTimeZoneInformation->StandardName, "GMT", sizeof("GMT"));
+
+    return;
+}
 
 STATIC VOID WINAPI GetSystemTime(PSYSTEMTIME lpSystemTime)
 {
@@ -112,6 +156,8 @@ STATIC BOOL WINAPI FileTimeToSystemTime(PFILETIME lpFileTime, PSYSTEMTIME lpSyst
     return FALSE;
 }
 
+DECLARE_CRT_EXPORT("GetLocalTime", GetLocalTime);
+DECLARE_CRT_EXPORT("GetTimeZoneInformation", GetTimeZoneInformation);
 DECLARE_CRT_EXPORT("GetSystemTime", GetSystemTime);
 DECLARE_CRT_EXPORT("SystemTimeToFileTime", SystemTimeToFileTime);
 DECLARE_CRT_EXPORT("GetSystemTimePreciseAsFileTime", GetSystemTimePreciseAsFileTime);

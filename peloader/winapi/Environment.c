@@ -112,11 +112,44 @@ finish:
 static DWORD WINAPI GetEnvironmentVariableA(PCHAR lpName, PVOID lpBuffer, DWORD nSize)
 {
     DebugLog("%s, %p, %u", lpName, lpBuffer, nSize);
-    return 0;
+    memset(lpBuffer, 0, nSize);
+
+    if (strcmp(lpName, "MpAsyncWorkMaxThreads") == 0) {
+        memcpy(lpBuffer, L"1", sizeof(L"1"));
+    } else if (strcmp(lpName, "MP_FOLDERSCAN_THREAD_COUNT") == 0) {
+        memcpy(lpBuffer, L"1", sizeof(L"1"));
+    } else if (strcmp(lpName, "MP_PERSISTEDSTORE_DISABLE") == 0) {
+        memcpy(lpBuffer, L"1", sizeof(L"1"));
+    } else if (strcmp(lpName, "MP_METASTORE_DISABLE") == 0) {
+        memcpy(lpBuffer, L"1", sizeof(L"1"));
+    } else if (strcmp(lpName, "__MSVCRT_HEAP_SELECT") == 0) {
+        memcpy(lpBuffer, L"1", sizeof(L"1"));
+    } else {
+        SetLastError(ERROR_ENVVAR_NOT_FOUND);
+    }
+
+    return strlen(lpBuffer);
 }
+
+STATIC PVOID WINAPI GetEnvironmentStringsA(void)
+{
+    DebugLog("");
+
+    return EnvironmentStrings;
+}
+
+STATIC BOOL WINAPI FreeEnvironmentStringsA(PVOID lpszEnvironmentBlock)
+{
+    DebugLog("%p", lpszEnvironmentBlock);
+
+    return TRUE;
+}
+
 
 DECLARE_CRT_EXPORT("GetEnvironmentStringsW", GetEnvironmentStringsW);
 DECLARE_CRT_EXPORT("FreeEnvironmentStringsW", FreeEnvironmentStringsW);
 DECLARE_CRT_EXPORT("GetEnvironmentVariableW", GetEnvironmentVariableW);
 DECLARE_CRT_EXPORT("ExpandEnvironmentStringsW", ExpandEnvironmentStringsW);
 DECLARE_CRT_EXPORT("GetEnvironmentVariableA", GetEnvironmentVariableA);
+DECLARE_CRT_EXPORT("GetEnvironmentStringsA", GetEnvironmentStringsA);
+DECLARE_CRT_EXPORT("FreeEnvironmentStringsA", FreeEnvironmentStringsA);

@@ -262,6 +262,18 @@ static int check_nt_hdr(IMAGE_NT_HEADERS *nt_hdr)
         return -EINVAL;
 }
 
+void WINAPI ordinal_import_stub(void)
+{
+        warnx("function at %p attempted to call a symbol imported by ordinal", __builtin_return_address(0));
+        __debugbreak();
+}
+
+void WINAPI unknown_symbol_stub(void)
+{
+        warnx("function at %p attempted to call an unknown symbol", __builtin_return_address(0));
+        __debugbreak();
+}
+
 static int import(void *image, IMAGE_IMPORT_DESCRIPTOR *dirent, char *dll)
 {
         ULONG_PTR *lookup_tbl, *address_tbl;
@@ -269,18 +281,7 @@ static int import(void *image, IMAGE_IMPORT_DESCRIPTOR *dirent, char *dll)
         int i;
         int ret = 0;
         generic_func adr;
-
-        void ordinal_import_stub(void)
-        {
-                warnx("function at %p attempted to call a symbol imported by ordinal", __builtin_return_address(0));
-                __debugbreak();
-        }
-
-        void unknown_symbol_stub(void)
-        {
-                warnx("function at %p attempted to call an unknown symbol", __builtin_return_address(0));
-                __debugbreak();
-        }
+        ULONG unknown_func = 0xdead0000;
 
         lookup_tbl = RVA2VA(image, dirent->u.OriginalFirstThunk, ULONG_PTR *);
         address_tbl = RVA2VA(image, dirent->FirstThunk, ULONG_PTR *);
@@ -300,8 +301,9 @@ static int import(void *image, IMAGE_IMPORT_DESCRIPTOR *dirent, char *dll)
 
                 if (get_export(symname, &adr) < 0)
                 {
-                        ERROR("unknown symbol: %s:%s", dll, symname);
-                        address_tbl[i] = (ULONG)unknown_symbol_stub;
+                        ERROR("unknown symbol: %s:%s %x", dll, symname, unknown_func);
+                        address_tbl[i] = (ULONG)unknown_func;
+                        unknown_func++;
                         continue;
                 }
                 else
@@ -561,6 +563,8 @@ static int fix_pe_image(struct pe_image *pe)
         return 0;
 }
 
+HANDLE current_module = NULL;
+
 int link_pe_images(struct pe_image *pe_image, unsigned short n)
 {
         int i;
@@ -643,6 +647,8 @@ int link_pe_images(struct pe_image *pe_image, unsigned short n)
                         LocalStorage[0] = (uintptr_t)TlsData->RawDataStart;
                 }
         }
+
+        current_module = (HANDLE)pe->image;
 
         return 0;
 }
