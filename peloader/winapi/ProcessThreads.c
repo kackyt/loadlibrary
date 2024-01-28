@@ -7,6 +7,7 @@
 #include <search.h>
 #include <assert.h>
 #include <unistd.h>
+#include <pthread.h>
 
 #include "winnt_types.h"
 #include "pe_linker.h"
@@ -19,7 +20,7 @@
 static PVOID WINAPI CreateThreadpoolTimer(PVOID pfnti, PVOID pv, PVOID pcbe)
 {
     // DebugLog("%p, %p, %p", pfnti, pv, pcbe);
-    return (PVOID) 'POOL';
+    return (PVOID)'POOL';
 }
 
 static VOID WINAPI InitializeSRWLock(PVOID SRWLock)
@@ -57,7 +58,8 @@ static LONG InterlockedIncrement(PULONG Addend)
 static LONG InterlockedCompareExchange(PULONG Destination, LONG Exchange, LONG Comparand)
 {
     DebugLog("%p", Destination);
-    if (*Destination == Comparand) {
+    if (*Destination == Comparand)
+    {
         *Destination = Exchange;
     }
     return *Destination;
@@ -73,17 +75,17 @@ static HANDLE WINAPI CreateSemaphoreW(PVOID lpSemaphoreAttributes, LONG lInitial
 #endif
     DebugLog("%p, %u, %u, %p [%s]", lpSemaphoreAttributes, lInitialCount, lMaximumCount, lpName, name);
     free(name);
-    return (HANDLE) 'SEMA';
+    return (HANDLE)'SEMA';
 }
 
 static HANDLE WINAPI GetCurrentProcess(VOID)
 {
-    return (HANDLE) -1;
+    return (HANDLE)-1;
 }
 
 static HANDLE WINAPI GetCurrentThread(VOID)
 {
-    return (HANDLE) -1;
+    return (HANDLE)-1;
 }
 
 static DWORD WINAPI GetCurrentThreadId(VOID)
@@ -131,6 +133,12 @@ static HANDLE WINAPI CreateMutexW(PVOID lpMutexAttributes, BOOL bInitialOwner, P
 static DWORD WINAPI WaitForSingleObject(HANDLE hHandle, DWORD dwMilliseconds)
 {
     DebugLog("%p, %u", hHandle, dwMilliseconds);
+    if ((UINT)hHandle & 1)
+    {
+        pthread_t *pThread = (pthread_t *)((UINT)hHandle & ~1);
+        void *ret;
+        return pthread_join(*pThread, &ret);
+    }
     return -1;
 }
 

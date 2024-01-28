@@ -17,13 +17,14 @@
 #include "util.h"
 #include "winstrings.h"
 
-typedef struct _WIN32_FILE_ATTRIBUTE_DATA {
-  DWORD    dwFileAttributes;
-  FILETIME ftCreationTime;
-  FILETIME ftLastAccessTime;
-  FILETIME ftLastWriteTime;
-  DWORD    nFileSizeHigh;
-  DWORD    nFileSizeLow;
+typedef struct _WIN32_FILE_ATTRIBUTE_DATA
+{
+    DWORD dwFileAttributes;
+    FILETIME ftCreationTime;
+    FILETIME ftLastAccessTime;
+    FILETIME ftLastWriteTime;
+    DWORD nFileSizeHigh;
+    DWORD nFileSizeLow;
 } WIN32_FILE_ATTRIBUTE_DATA, *LPWIN32_FILE_ATTRIBUTE_DATA;
 extern void WINAPI SetLastError(DWORD dwErrCode);
 
@@ -40,8 +41,8 @@ static DWORD WINAPI GetFileAttributesW(PVOID lpFileName)
     char *filename = CreateAnsiFromWide(lpFileName);
     DebugLog("%p [%s]", lpFileName, filename);
 
-    if (strstr(filename, "RebootActions") || strstr(filename, "RtSigs")
-    ) {
+    if (strstr(filename, "RebootActions") || strstr(filename, "RtSigs"))
+    {
         Result = INVALID_FILE_ATTRIBUTES;
         goto finish;
     }
@@ -63,12 +64,13 @@ static DWORD WINAPI GetFileAttributesExW(PWCHAR lpFileName, DWORD fInfoLevelId, 
     return TRUE;
 }
 
-enum {
-    CREATE_NEW          = 1,
-    CREATE_ALWAYS       = 2,
-    OPEN_EXISTING       = 3,
-    OPEN_ALWAYS         = 4,
-    TRUNCATE_EXISTING   = 5
+enum
+{
+    CREATE_NEW = 1,
+    CREATE_ALWAYS = 2,
+    OPEN_EXISTING = 3,
+    OPEN_ALWAYS = 4,
+    TRUNCATE_EXISTING = 5
 };
 
 static HANDLE WINAPI CreateFileA(PCHAR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, PVOID lpSecurityAttributes, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile)
@@ -85,25 +87,29 @@ static HANDLE WINAPI CreateFileA(PCHAR lpFileName, DWORD dwDesiredAccess, DWORD 
     for (char *t = lpFileName; *t; t++)
         *t = tolower(*t);
 
-    switch (dwCreationDisposition) {
-        case OPEN_EXISTING:
-            FileHandle = fopen(lpFileName, "r");
-            break;
-        case CREATE_ALWAYS:
+    switch (dwCreationDisposition)
+    {
+    case OPEN_EXISTING:
+        FileHandle = fopen(lpFileName, "r");
+        break;
+    case CREATE_ALWAYS:
+        FileHandle = fopen("/dev/null", "w");
+        break;
+    // This is the disposition used by CreateTempFile().
+    case CREATE_NEW:
+        if (strstr(lpFileName, "/faketemp/"))
+        {
+            FileHandle = fopen(lpFileName, "w");
+            // Unlink it immediately so it's cleaned up on exit.
+            unlink(lpFileName);
+        }
+        else
+        {
             FileHandle = fopen("/dev/null", "w");
-            break;
-        // This is the disposition used by CreateTempFile().
-        case CREATE_NEW:
-            if (strstr(lpFileName, "/faketemp/")) {
-                FileHandle = fopen(lpFileName, "w");
-                // Unlink it immediately so it's cleaned up on exit.
-                unlink(lpFileName);
-            } else {
-                FileHandle = fopen("/dev/null", "w");
-            }
-            break;
-        default:
-            abort();
+        }
+        break;
+    default:
+        abort();
     }
 
     DebugLog("%s => %p", lpFileName, FileHandle);
@@ -111,7 +117,6 @@ static HANDLE WINAPI CreateFileA(PCHAR lpFileName, DWORD dwDesiredAccess, DWORD 
     SetLastError(ERROR_FILE_NOT_FOUND);
     return FileHandle ? FileHandle : INVALID_HANDLE_VALUE;
 }
-
 
 static HANDLE WINAPI CreateFileW(PWCHAR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, PVOID lpSecurityAttributes, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile)
 {
@@ -128,27 +133,31 @@ static HANDLE WINAPI CreateFileW(PWCHAR lpFileName, DWORD dwDesiredAccess, DWORD
     for (char *t = filename; *t; t++)
         *t = tolower(*t);
 
-    //LogMessage("%u %s", dwCreationDisposition, filename);
+    // LogMessage("%u %s", dwCreationDisposition, filename);
 
-    switch (dwCreationDisposition) {
-        case OPEN_EXISTING:
-            FileHandle = fopen(filename, "r");
-            break;
-        case CREATE_ALWAYS:
+    switch (dwCreationDisposition)
+    {
+    case OPEN_EXISTING:
+        FileHandle = fopen(filename, "r");
+        break;
+    case CREATE_ALWAYS:
+        FileHandle = fopen("/dev/null", "w");
+        break;
+    // This is the disposition used by CreateTempFile().
+    case CREATE_NEW:
+        if (strstr(filename, "/faketemp/"))
+        {
+            FileHandle = fopen(filename, "w");
+            // Unlink it immediately so it's cleaned up on exit.
+            unlink(filename);
+        }
+        else
+        {
             FileHandle = fopen("/dev/null", "w");
-            break;
-        // This is the disposition used by CreateTempFile().
-        case CREATE_NEW:
-            if (strstr(filename, "/faketemp/")) {
-                FileHandle = fopen(filename, "w");
-                // Unlink it immediately so it's cleaned up on exit.
-                unlink(filename);
-            } else {
-                FileHandle = fopen("/dev/null", "w");
-            }
-            break;
-        default:
-            abort();
+        }
+        break;
+    default:
+        abort();
     }
 
     DebugLog("%s => %p", filename, FileHandle);
@@ -160,9 +169,9 @@ static HANDLE WINAPI CreateFileW(PWCHAR lpFileName, DWORD dwDesiredAccess, DWORD
 }
 
 /**
- * TODO: handle 64 bit 
+ * TODO: handle 64 bit
  */
-static DWORD WINAPI SetFilePointer(HANDLE hFile, LONG liDistanceToMove,  LONG *lpDistanceToMoveHigh, DWORD dwMoveMethod)
+static DWORD WINAPI SetFilePointer(HANDLE hFile, LONG liDistanceToMove, LONG *lpDistanceToMoveHigh, DWORD dwMoveMethod)
 {
     int result;
 
@@ -172,39 +181,48 @@ static DWORD WINAPI SetFilePointer(HANDLE hFile, LONG liDistanceToMove,  LONG *l
 
     DWORD pos = ftell(hFile);
 
-    if (lpDistanceToMoveHigh) {
+    if (lpDistanceToMoveHigh)
+    {
         *lpDistanceToMoveHigh = 0;
     }
 
     return pos;
 }
 
-
-static BOOL WINAPI SetFilePointerEx(HANDLE hFile, uint64_t liDistanceToMove,  uint64_t *lpNewFilePointer, DWORD dwMoveMethod)
+static BOOL WINAPI SetFilePointerEx(HANDLE hFile, uint64_t liDistanceToMove, uint64_t *lpNewFilePointer, DWORD dwMoveMethod)
 {
     int result;
 
-    //DebugLog("%p, %llu, %p, %u", hFile, liDistanceToMove, lpNewFilePointer, dwMoveMethod);
+    // DebugLog("%p, %llu, %p, %u", hFile, liDistanceToMove, lpNewFilePointer, dwMoveMethod);
 
     result = fseek(hFile, liDistanceToMove, dwMoveMethod);
 
     // dwMoveMethod maps onto SEEK_SET/SEEK_CUR/SEEK_END perfectly.
-    if (lpNewFilePointer) {
+    if (lpNewFilePointer)
+    {
         *lpNewFilePointer = ftell(hFile);
     }
 
     // Windows is permissive here.
     return TRUE;
-    //return result != -1; 
+    // return result != -1;
 }
 
 static BOOL WINAPI CloseHandle(HANDLE hObject)
 {
     DebugLog("%p", hObject);
-    if (hObject != (HANDLE) 'EVNT'
-     && hObject != INVALID_HANDLE_VALUE
-     && hObject != (HANDLE) 'SEMA')
-        fclose(hObject);
+    if (hObject != (HANDLE)'EVNT' && hObject != INVALID_HANDLE_VALUE && hObject != (HANDLE)'SEMA')
+    {
+        if ((UINT)hObject & 1)
+        {
+            free((void *)((UINT)hObject & ~1));
+        }
+        else
+        {
+            fclose(hObject);
+        }
+    }
+
     return TRUE;
 }
 
@@ -242,7 +260,6 @@ static BOOL WINAPI GetFileSizeEx(HANDLE hFile, uint64_t *lpFileSize)
 
     DebugLog("%p, %p => %llu", hFile, lpFileSize, *lpFileSize);
 
-
     return TRUE;
 }
 
@@ -261,7 +278,7 @@ static HANDLE WINAPI FindFirstFileW(PWCHAR lpFileName, PVOID lpFindFileData)
 
 static DWORD WINAPI NtOpenSymbolicLinkObject(PHANDLE LinkHandle, DWORD DesiredAccess, PVOID ObjectAttributes)
 {
-    *LinkHandle = (HANDLE) 'SYMB';
+    *LinkHandle = (HANDLE)'SYMB';
     return STATUS_SUCCESS;
 }
 
@@ -276,35 +293,35 @@ static NTSTATUS WINAPI NtClose(HANDLE Handle)
 }
 
 static BOOL WINAPI DeviceIoControl(
-  HANDLE       hDevice,
-  DWORD        dwIoControlCode,
-  PVOID       lpInBuffer,
-  DWORD        nInBufferSize,
-  PVOID       lpOutBuffer,
-  DWORD        nOutBufferSize,
-  PDWORD      lpBytesReturned,
-  PVOID       lpOverlapped)
+    HANDLE hDevice,
+    DWORD dwIoControlCode,
+    PVOID lpInBuffer,
+    DWORD nInBufferSize,
+    PVOID lpOutBuffer,
+    DWORD nOutBufferSize,
+    PDWORD lpBytesReturned,
+    PVOID lpOverlapped)
 {
     DebugLog("");
     return FALSE;
 }
 
-static NTSTATUS  NtQueryVolumeInformationFile(
- HANDLE               FileHandle,
- PVOID                IoStatusBlock,
- PVOID                FsInformation,
- ULONG                Length,
- DWORD FsInformationClass)
+static NTSTATUS NtQueryVolumeInformationFile(
+    HANDLE FileHandle,
+    PVOID IoStatusBlock,
+    PVOID FsInformation,
+    ULONG Length,
+    DWORD FsInformationClass)
 {
     DebugLog("");
     return 1;
 }
 
 static DWORD WINAPI GetFullPathNameW(
-  PWCHAR lpFileName,
-  DWORD   nBufferLength,
-  PWCHAR  lpBuffer,
-  PWCHAR  *lpFilePart)
+    PWCHAR lpFileName,
+    DWORD nBufferLength,
+    PWCHAR lpBuffer,
+    PWCHAR *lpFilePart)
 {
     DebugLog("");
     return 0;
@@ -328,7 +345,7 @@ static BOOL WINAPI GetFileVersionInfoExW(DWORD dwFlags, PWCHAR lptstrFilename, D
     return FALSE;
 }
 
-static BOOL WINAPI VerQueryValueW(PVOID pBlock, PWCHAR lpSubBlock, PVOID  *lplpBuffer, PDWORD puLen)
+static BOOL WINAPI VerQueryValueW(PVOID pBlock, PWCHAR lpSubBlock, PVOID *lplpBuffer, PDWORD puLen)
 {
     DebugLog("");
     return FALSE;

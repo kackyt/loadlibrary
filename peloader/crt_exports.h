@@ -1,112 +1,67 @@
 
 /* automatically generated from src */
 __attribute__((format(printf, 2, 3)))
-noregparm INT WIN_FUNC(_win_sprintf,12)
-        (char *buf, const char *format, ...);
-noregparm INT WIN_FUNC(swprintf,12)
-        (wchar_t *buf, const wchar_t *format, ...);
-noregparm INT WIN_FUNC(_win_vsprintf,3)
-        (char *str, const char *format, va_list ap);
+noregparm INT WIN_FUNC(_win_sprintf, 12)(char *buf, const char *format, ...);
+noregparm INT WIN_FUNC(swprintf, 12)(wchar_t *buf, const wchar_t *format, ...);
+noregparm INT WIN_FUNC(_win_vsprintf, 3)(char *str, const char *format, va_list ap);
 __attribute__((format(printf, 3, 4)))
-noregparm INT WIN_FUNC(_win_snprintf,12)
-        (char *buf, SIZE_T count, const char *format, ...);
+noregparm INT WIN_FUNC(_win_snprintf, 12)(char *buf, SIZE_T count, const char *format, ...);
 __attribute__((format(printf, 3, 4)))
-noregparm INT WIN_FUNC(_win__snprintf,12)
-        (char *buf, SIZE_T count, const char *format, ...);
-noregparm INT WIN_FUNC(_win_vsnprintf,4)
-        (char *str, SIZE_T size, const char *format, va_list ap);
-noregparm INT WIN_FUNC(_win__vsnprintf,4)
-        (char *str, SIZE_T size, const char *format, va_list ap);
-noregparm INT WIN_FUNC(_win__vsnwprintf,4)
-        (wchar_t *str, SIZE_T size, const wchar_t *format, va_list ap);
-noregparm char *WIN_FUNC(_win_strncpy,3)
-        (char *dst, char *src, SIZE_T n);
-noregparm SIZE_T WIN_FUNC(_win_strlen,1)
-        (const char *s);
-noregparm INT WIN_FUNC(_win_strncmp,3)
-        (const char *s1, const char *s2, SIZE_T n);
-noregparm INT WIN_FUNC(_win_strcmp,2)
-        (const char *s1, const char *s2);
-noregparm INT WIN_FUNC(_win_stricmp,2)
-        (const char *s1, const char *s2);
-noregparm INT WIN_FUNC(_win_strnicmp,3)
-        (const char *s1, const char *s2, SIZE_T n);
-noregparm char *WIN_FUNC(_win_strncat,3)
-        (char *dest, const char *src, SIZE_T n);
-noregparm INT WIN_FUNC(_win_wcscmp,2)
-        (const wchar_t *s1, const wchar_t *s2);
-noregparm INT WIN_FUNC(_win_wcsicmp,2)
-        (const wchar_t *s1, const wchar_t *s2);
-noregparm SIZE_T WIN_FUNC(_win_wcslen,1)
-        (const wchar_t *s);
-noregparm wchar_t *WIN_FUNC(_win_wcsncpy,3)
-        (wchar_t *dest, const wchar_t *src, SIZE_T n);
-noregparm wchar_t *WIN_FUNC(_win_wcscpy,2)
-        (wchar_t *dest, const wchar_t *src);
-noregparm wchar_t *WIN_FUNC(_win_wcscat,2)
-        (wchar_t *dest, const wchar_t *src);
-noregparm INT WIN_FUNC(_win_towupper,1)
-        (wchar_t c);
-noregparm INT WIN_FUNC(_win_towlower,1)
-        (wchar_t c);
-noregparm INT WIN_FUNC(_win_tolower,1)
-        (INT c);
-noregparm INT WIN_FUNC(_win_toupper,1)
-        (INT c);
-noregparm void *WIN_FUNC(_win_strcpy,2)
-        (void *to, const void *from);
-noregparm char *WIN_FUNC(_win_strstr,2)
-        (const char *s1, const char *s2);
-noregparm char *WIN_FUNC(_win_strchr,2)
-        (const char *s, int c);
-noregparm char *WIN_FUNC(_win_strrchr,2)
-        (const char *s, int c);
-noregparm void *WIN_FUNC(_win_memmove,3)
-        (void *to, void *from, SIZE_T count);
-noregparm void *WIN_FUNC(_win_memchr,3)
-        (const void *s, INT c, SIZE_T n);
-noregparm void *WIN_FUNC(_win_memcpy,3)
-        (void *to, const void *from, SIZE_T n);
-noregparm void *WIN_FUNC(_win_memset,3)
-        (void *s, char c, SIZE_T count);
-noregparm int WIN_FUNC(_win_memcmp,3)
-        (void *s1, void *s2, SIZE_T n);
-noregparm int WIN_FUNC(_win_atoi,1)
-        (const char *ptr);
-noregparm int WIN_FUNC(_win_isdigit,1)
-        (int c);
-noregparm int WIN_FUNC(_win_isxdigit,1)
-        (int c);
-noregparm int WIN_FUNC(_win_isalpha,1)
-        (int c);
-noregparm int WIN_FUNC(_win_isalnum,1)
-        (int c);
-noregparm int WIN_FUNC(_win_islower,1)
-        (int c);
-noregparm int WIN_FUNC(_win_isspace,1)
-        (int c);
-noregparm int WIN_FUNC(_win_isprint,1)
-        (int c);
-wstdcall int64_t WIN_FUNC(_alldiv,2)
-        (int64_t a, int64_t b);
-wstdcall uint64_t WIN_FUNC(_aulldiv,2)
-        (uint64_t a, uint64_t b);
-wstdcall int64_t WIN_FUNC(_allmul,2)
-        (int64_t a, int64_t b);
-wstdcall uint64_t WIN_FUNC(_aullmul,2)
-        (uint64_t a, uint64_t b);
-wstdcall int64_t WIN_FUNC(_allrem,2)
-        (int64_t a, int64_t b);
-wstdcall uint64_t WIN_FUNC(_aullrem,2)
-        (uint64_t a, uint64_t b);
-regparm3 int64_t WIN_FUNC(_allshl,2)
-        (int64_t a, uint8_t b);
-regparm3 uint64_t WIN_FUNC(_aullshl,2)
-        (uint64_t a, uint8_t b);
-regparm3 int64_t WIN_FUNC(_allshr,2)
-        (int64_t a, uint8_t b);
-regparm3 uint64_t WIN_FUNC(_aullshr,2)
-        (uint64_t a, uint8_t b);
+noregparm INT WIN_FUNC(_win__snprintf, 12)(char *buf, SIZE_T count, const char *format, ...);
+noregparm INT WIN_FUNC(_win_vsnprintf, 4)(char *str, SIZE_T size, const char *format, va_list ap);
+noregparm INT WIN_FUNC(_win__vsnprintf, 4)(char *str, SIZE_T size, const char *format, va_list ap);
+noregparm INT WIN_FUNC(_win__vsnwprintf, 4)(wchar_t *str, SIZE_T size, const wchar_t *format, va_list ap);
+noregparm char *WIN_FUNC(_win_strncpy, 3)(char *dst, char *src, SIZE_T n);
+noregparm SIZE_T WIN_FUNC(_win_strlen, 1)(const char *s);
+noregparm INT WIN_FUNC(_win_strncmp, 3)(const char *s1, const char *s2, SIZE_T n);
+noregparm INT WIN_FUNC(_win_strcmp, 2)(const char *s1, const char *s2);
+noregparm INT WIN_FUNC(_win_stricmp, 2)(const char *s1, const char *s2);
+noregparm INT WIN_FUNC(_win_strnicmp, 3)(const char *s1, const char *s2, SIZE_T n);
+noregparm char *WIN_FUNC(_win_strncat, 3)(char *dest, const char *src, SIZE_T n);
+noregparm INT WIN_FUNC(_win_wcscmp, 2)(const wchar_t *s1, const wchar_t *s2);
+noregparm INT WIN_FUNC(_win_wcsicmp, 2)(const wchar_t *s1, const wchar_t *s2);
+noregparm SIZE_T WIN_FUNC(_win_wcslen, 1)(const wchar_t *s);
+noregparm wchar_t *WIN_FUNC(_win_wcsncpy, 3)(wchar_t *dest, const wchar_t *src, SIZE_T n);
+noregparm wchar_t *WIN_FUNC(_win_wcscpy, 2)(wchar_t *dest, const wchar_t *src);
+noregparm wchar_t *WIN_FUNC(_win_wcscat, 2)(wchar_t *dest, const wchar_t *src);
+noregparm INT WIN_FUNC(_win_towupper, 1)(wchar_t c);
+noregparm INT WIN_FUNC(_win_towlower, 1)(wchar_t c);
+noregparm INT WIN_FUNC(_win_tolower, 1)(INT c);
+noregparm INT WIN_FUNC(_win_toupper, 1)(INT c);
+noregparm void *WIN_FUNC(_win_strcpy, 2)(void *to, const void *from);
+noregparm char *WIN_FUNC(_win_strstr, 2)(const char *s1, const char *s2);
+noregparm char *WIN_FUNC(_win_strchr, 2)(const char *s, int c);
+noregparm char *WIN_FUNC(_win_strrchr, 2)(const char *s, int c);
+noregparm void *WIN_FUNC(_win_memmove, 3)(void *to, void *from, SIZE_T count);
+noregparm void *WIN_FUNC(_win_memchr, 3)(const void *s, INT c, SIZE_T n);
+noregparm void *WIN_FUNC(_win_memcpy, 3)(void *to, const void *from, SIZE_T n);
+noregparm void *WIN_FUNC(_win_memset, 3)(void *s, char c, SIZE_T count);
+noregparm int WIN_FUNC(_win_memcmp, 3)(void *s1, void *s2, SIZE_T n);
+noregparm int WIN_FUNC(_win_atoi, 1)(const char *ptr);
+noregparm int WIN_FUNC(_win_isdigit, 1)(int c);
+noregparm int WIN_FUNC(_win_isxdigit, 1)(int c);
+noregparm int WIN_FUNC(_win_isalpha, 1)(int c);
+noregparm int WIN_FUNC(_win_isalnum, 1)(int c);
+noregparm int WIN_FUNC(_win_islower, 1)(int c);
+noregparm int WIN_FUNC(_win_isspace, 1)(int c);
+noregparm int WIN_FUNC(_win_isprint, 1)(int c);
+wstdcall int64_t WIN_FUNC(_alldiv, 2)(int64_t a, int64_t b);
+wstdcall uint64_t WIN_FUNC(_aulldiv, 2)(uint64_t a, uint64_t b);
+wstdcall int64_t WIN_FUNC(_allmul, 2)(int64_t a, int64_t b);
+wstdcall uint64_t WIN_FUNC(_aullmul, 2)(uint64_t a, uint64_t b);
+wstdcall int64_t WIN_FUNC(_allrem, 2)(int64_t a, int64_t b);
+wstdcall uint64_t WIN_FUNC(_aullrem, 2)(uint64_t a, uint64_t b);
+regparm3 int64_t WIN_FUNC(_allshl, 2)(int64_t a, uint8_t b);
+regparm3 uint64_t WIN_FUNC(_aullshl, 2)(uint64_t a, uint8_t b);
+regparm3 int64_t WIN_FUNC(_allshr, 2)(int64_t a, uint8_t b);
+regparm3 uint64_t WIN_FUNC(_aullshr, 2)(uint64_t a, uint8_t b);
+regparm3 int WIN_FUNC(_initialize_onexit_table, 1)(void *);
+regparm3 int WIN_FUNC(_initterm_e, 2)(void *, void *);
+regparm3 int WIN_FUNC(_initterm, 2)(void *, void *);
+regparm3 int WIN_FUNC(strcpy_s, 3)(char *, size_t, const char *);
+regparm3 __time64_t WIN_FUNC(_time64, 1)(__time64_t *);
+noregparm HANDLE WIN_FUNC(_beginthreadex, 3)(void *, size_t, void *, void *, size_t, void *);
+noregparm void WIN_FUNC(_endthreadex, 1)(int);
 
 extern struct wrap_export crt_exports[];
 
@@ -122,6 +77,28 @@ struct wrap_export crt_exports[] = {
 	WIN_SYMBOL(_aullshl, 2),
 	WIN_SYMBOL(_aullshr, 2),
 	WIN_SYMBOL(swprintf, 12),
+	// api-ms-win-crt
+	WIN_SYMBOL(abort, 1),
+	WIN_SYMBOL(rand, 1),
+	WIN_SYMBOL(qsort, 4),
+	WIN_SYMBOL(srand, 1),
+	WIN_SYMBOL(calloc, 2),
+	WIN_SYMBOL(malloc, 1),
+
+	WIN_SYMBOL(free, 1),
+	WIN_SYMBOL(strcpy, 2),
+	WIN_SYMBOL(strcpy_s, 2),
+
+	WIN_SYMBOL(_time64, 1),
+
+	WIN_SYMBOL(_initialize_onexit_table, 1),
+	WIN_SYMBOL(_initterm_e, 2),
+	WIN_SYMBOL(_initterm, 2),
+
+	// thread
+	WIN_SYMBOL(_beginthreadex, 6),
+	WIN_SYMBOL(_endthreadex, 1),
+
 	WIN_WIN_SYMBOL(atoi, 1),
 	WIN_WIN_SYMBOL(isdigit, 1),
 	WIN_WIN_SYMBOL(isxdigit, 1),
@@ -163,5 +140,4 @@ struct wrap_export crt_exports[] = {
 	WIN_WIN_SYMBOL(wcsicmp, 2),
 	WIN_WIN_SYMBOL(wcslen, 1),
 	WIN_WIN_SYMBOL(wcsncpy, 3),
-	{ NULL, NULL }
-};
+	{NULL, NULL}};
