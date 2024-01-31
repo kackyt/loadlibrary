@@ -485,14 +485,19 @@ noregparm HANDLE WIN_FUNC(_beginthreadex, 6)(void *security, size_t stacksize, v
         pthread_attr_t attr;
         DebugLog("func: %p stacksize: %u args: %p", func, stacksize, args);
 
-        memset(&attr, 0, sizeof(attr));
+        pthread_attr_init(&attr);
+
+        if (stacksize > 0)
+        {
+                pthread_attr_setstacksize(&attr, stacksize);
+        }
 
         pThread = (pthread_t *)malloc(sizeof(pthread_t) + sizeof(void *) * 2);
         void **argp = (void **)&pThread[1];
         argp[0] = func;
         argp[1] = args;
 
-        pthread_create(pThread, NULL, threadEntry, argp);
+        pthread_create(pThread, &attr, threadEntry, argp);
 
         return (HANDLE)((UINT)pThread | 1);
 }
@@ -508,11 +513,16 @@ noregparm HANDLE WIN_FUNC(_beginthread, 3)(void *func, size_t stacksize, void *a
         pthread_attr_t attr;
         DebugLog("func: %p stacksize: %u args: %p", func, stacksize, args);
 
-        memset(&attr, 0, sizeof(attr));
+        pthread_attr_init(&attr);
+
+        if (stacksize > 0)
+        {
+                pthread_attr_setstacksize(&attr, stacksize);
+        }
 
         pThread = (pthread_t *)malloc(sizeof(pthread_t));
 
-        pthread_create(pThread, NULL, func, args);
+        pthread_create(pThread, &attr, func, args);
 
         return (HANDLE)((UINT)pThread | 1);
 }
