@@ -137,7 +137,9 @@ static DWORD WINAPI WaitForSingleObject(HANDLE hHandle, DWORD dwMilliseconds)
     {
         pthread_t *pThread = (pthread_t *)((UINT)hHandle & ~1);
         void *ret;
-        return pthread_join(*pThread, &ret);
+        DWORD result = pthread_join(*pThread, &ret);
+        free(pThread);
+        return result;
     }
     return -1;
 }

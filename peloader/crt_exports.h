@@ -60,8 +60,10 @@ regparm3 int WIN_FUNC(_initterm_e, 2)(void *, void *);
 regparm3 int WIN_FUNC(_initterm, 2)(void *, void *);
 regparm3 int WIN_FUNC(strcpy_s, 3)(char *, size_t, const char *);
 regparm3 __time64_t WIN_FUNC(_time64, 1)(__time64_t *);
-noregparm HANDLE WIN_FUNC(_beginthreadex, 3)(void *, size_t, void *, void *, size_t, void *);
+noregparm HANDLE WIN_FUNC(_beginthreadex, 6)(void *, size_t, void *, void *, size_t, void *);
 noregparm void WIN_FUNC(_endthreadex, 1)(int);
+noregparm HANDLE WIN_FUNC(_beginthread, 3)(void *, size_t, void *);
+noregparm void WIN_FUNC(_endthread, 0)(void);
 
 extern struct wrap_export crt_exports[];
 
@@ -98,6 +100,8 @@ struct wrap_export crt_exports[] = {
 	// thread
 	WIN_SYMBOL(_beginthreadex, 6),
 	WIN_SYMBOL(_endthreadex, 1),
+	WIN_SYMBOL(_beginthread, 3),
+	WIN_SYMBOL(_endthread, 0),
 
 	WIN_WIN_SYMBOL(atoi, 1),
 	WIN_WIN_SYMBOL(isdigit, 1),

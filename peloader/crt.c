@@ -465,11 +465,11 @@ regparm3 __time64_t WIN_FUNC(_time64, 2)(__time64_t *timeptr)
         return timeptr;
 }
 
-typedef wstdcall void (*ThreadStartRoutine)(void *arg);
+typedef wstdcall void (*ThreadStartRoutineEx)(void *arg);
 
 static void *threadEntry(void **args)
 {
-        ThreadStartRoutine func = args[0];
+        ThreadStartRoutineEx func = args[0];
         void *arg = args[1];
 
         DebugLog("args %p func %p arg %p", args, func, arg);
@@ -498,6 +498,26 @@ noregparm HANDLE WIN_FUNC(_beginthreadex, 6)(void *security, size_t stacksize, v
 }
 
 noregparm void WIN_FUNC(_endthreadex, 1)(int _return)
+{
+        pthread_exit(NULL);
+}
+
+noregparm HANDLE WIN_FUNC(_beginthread, 3)(void *func, size_t stacksize, void *args)
+{
+        pthread_t *pThread;
+        pthread_attr_t attr;
+        DebugLog("func: %p stacksize: %u args: %p", func, stacksize, args);
+
+        memset(&attr, 0, sizeof(attr));
+
+        pThread = (pthread_t *)malloc(sizeof(pthread_t));
+
+        pthread_create(pThread, NULL, func, args);
+
+        return (HANDLE)((UINT)pThread | 1);
+}
+
+noregparm void WIN_FUNC(_endthread, 0)(void)
 {
         pthread_exit(NULL);
 }
