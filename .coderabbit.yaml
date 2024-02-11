@@ -39,5 +39,6 @@ reviews:
         base_branches:
             - "develop"
             - "feature/*"
+            - "rust"
 chat:
     auto_reply: true
