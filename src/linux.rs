@@ -70,3 +70,15 @@ pub unsafe fn win_dlsym(_: *mut c_void, sym: &str) -> anyhow::Result<*const c_vo
 
     Ok(ret)
 }
+
+pub unsafe fn win_dlclose(handle: *mut c_void) -> anyhow::Result<()> {
+    let image = &mut *(handle as *mut pe_image);
+    if let Some(entry) = image.entry {
+        entry(
+            std::ptr::null_mut(),
+            DLL_PROCESS_DETACH,
+            std::ptr::null_mut(),
+        );
+    }
+    Ok(())
+}

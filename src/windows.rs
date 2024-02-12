@@ -23,3 +23,12 @@ pub unsafe fn win_dlsym(handle: *mut c_void, sym: &str) -> anyhow::Result<*const
 
     Ok(func as *const c_void)
 }
+
+pub unsafe fn win_dlclose(handle: *mut c_void) -> anyhow::Result<()> {
+    ensure!(
+        FreeLibrary(handle as *mut HINSTANCE__) != 0,
+        "Cannot free library"
+    );
+
+    Ok(())
+}

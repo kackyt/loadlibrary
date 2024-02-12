@@ -30,6 +30,18 @@ pub unsafe fn win_dlsym(handle: *mut c_void, sym: &str) -> anyhow::Result<*const
     }
 }
 
+pub unsafe fn win_dlclose(handle: *mut c_void) -> anyhow::Result<()> {
+    #[cfg(target_os = "linux")]
+    {
+        linux::win_dlclose(handle)
+    }
+
+    #[cfg(target_os = "windows")]
+    {
+        windows::win_dlclose(handle)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use std::path::PathBuf;
