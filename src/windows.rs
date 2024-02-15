@@ -3,7 +3,10 @@ use std::{ffi::CString, os::raw::c_void, path::Path};
 use anyhow::ensure;
 use winapi::{
     shared::minwindef::HINSTANCE__,
-    um::libloaderapi::{FreeLibrary, GetProcAddress, LoadLibraryA},
+    um::{
+        errhandlingapi::GetLastError,
+        libloaderapi::{FreeLibrary, GetProcAddress, LoadLibraryA},
+    },
 };
 
 pub fn win_dlopen<P: AsRef<Path>>(path: P) -> anyhow::Result<*mut c_void> {
@@ -11,7 +14,12 @@ pub fn win_dlopen<P: AsRef<Path>>(path: P) -> anyhow::Result<*mut c_void> {
         let path = path.as_ref().to_str().unwrap();
         let handle = LoadLibraryA(path.as_ptr() as *const i8);
 
-        ensure!(!handle.is_null(), "Cannot load {}", path);
+        ensure!(
+            !handle.is_null(),
+            "Cannot load {} : ERRNO {}",
+            path,
+            GetLastError()
+        );
 
         return Ok(handle as *mut c_void);
     }
