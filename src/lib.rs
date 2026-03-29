@@ -18,6 +18,9 @@ pub fn win_dlopen<P: AsRef<Path>>(path: P) -> anyhow::Result<*mut c_void> {
     }
 }
 
+/// # Safety
+///
+/// この関数は、提供されたハンドルとシンボル名が有効であることを前提としています。
 pub unsafe fn win_dlsym(handle: *mut c_void, sym: &str) -> anyhow::Result<*const c_void> {
     #[cfg(target_os = "linux")]
     {
@@ -30,6 +33,9 @@ pub unsafe fn win_dlsym(handle: *mut c_void, sym: &str) -> anyhow::Result<*const
     }
 }
 
+/// # Safety
+///
+/// この関数は、提供されたハンドルが有効であることを前提としています。
 pub unsafe fn win_dlclose(handle: *mut c_void) -> anyhow::Result<()> {
     #[cfg(target_os = "linux")]
     {
